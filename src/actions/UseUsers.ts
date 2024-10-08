@@ -1,7 +1,13 @@
 import { useState, useEffect, useCallback } from "react";
 import { User } from "../types/User";
 
-const useUsers = (nameSortOrder: "asc" | "desc", searchTerm: string) => {
+interface UseUsersProps {
+  nameSortOrder: "asc" | "desc" | undefined;
+  searchTerm: string;
+  sortField: "name" | "email" | "none";
+}
+
+const useUsers = ({ nameSortOrder, searchTerm, sortField }: UseUsersProps) => {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [isError, setIsError] = useState<boolean>(false);
@@ -25,15 +31,18 @@ const useUsers = (nameSortOrder: "asc" | "desc", searchTerm: string) => {
     fetchUsers();
   }, [fetchUsers]);
 
-  const sortedUsers = [...users].sort((a, b) => {
-    const fieldA = a.name.toLowerCase();
-    const fieldB = b.name.toLowerCase();
-    if (nameSortOrder === "asc") {
-      return fieldA < fieldB ? -1 : fieldA > fieldB ? 1 : 0;
-    } else {
-      return fieldA > fieldB ? -1 : fieldA < fieldB ? 1 : 0;
-    }
-  });
+  const sortedUsers =
+    sortField !== "none" && nameSortOrder
+      ? [...users].sort((a, b) => {
+          const fieldA = a[sortField].toLowerCase();
+          const fieldB = b[sortField].toLowerCase();
+          if (nameSortOrder === "asc") {
+            return fieldA < fieldB ? -1 : fieldA > fieldB ? 1 : 0;
+          } else {
+            return fieldA > fieldB ? -1 : fieldA < fieldB ? 1 : 0;
+          }
+        })
+      : users;
 
   const filteredUsers = sortedUsers.filter((user) =>
     Object.values(user).some((value) =>
