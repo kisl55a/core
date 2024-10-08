@@ -1,5 +1,7 @@
 import { memo } from "react";
 import { User } from "../types/User";
+import UserCard from "./UserCard";
+import styles from "./UserList.module.sass";
 
 interface UserListProps {
   users: User[];
@@ -7,17 +9,9 @@ interface UserListProps {
 
 const UserList: React.FC<UserListProps> = ({ users }) => {
   return (
-    <div>
+    <div className={styles.userList}>
       {users.map((user) => (
-        <div key={user.id} className="user-card">
-          <h3>{user.name}</h3>
-          <p>Email: {user.email}</p>
-          <p>Phone: {user.phone}</p>
-          <p>Website: {user.website}</p>
-          <p>
-            Address: {user.address.street}, {user.address.city}
-          </p>
-        </div>
+        <UserCard user={user} key={user.id} />
       ))}
     </div>
   );
